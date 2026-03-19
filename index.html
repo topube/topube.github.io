@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kỹ Năng Bán Hàng — Vượt Rào Cản Giá Cả</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --ink:      #0f1117;
+  --ink2:     #2d3748;
+  --muted:    #718096;
+  --gold:     #c9952a;
+  --gold2:    #f5c842;
+  --cream:    #fdf8f0;
+  --white:    #ffffff;
+  --red:      #e53e3e;
+  --green:    #276749;
+  --border:   #e8e0d0;
+  --shadow:   0 4px 24px rgba(15,17,23,.10);
+  --shadow-lg:0 16px 60px rgba(15,17,23,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.7;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 5%;background:rgba(253,248,240,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--ink);}
+.nav-logo span{color:var(--gold);}
+.nav-cta{background:var(--gold);color:var(--white);border:none;padding:10px 22px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;}
+.nav-cta:hover{background:#b8841f;transform:translateY(-1px);}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:60px;padding:120px 5% 80px;max-width:1280px;margin:0 auto;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,149,42,.12);border:1px solid rgba(201,149,42,.4);color:var(--gold);padding:7px 16px;border-radius:100px;font-size:.8rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:28px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,4.4rem);font-weight:900;line-height:1.1;margin-bottom:20px;color:var(--ink);}
+.hero-title em{font-style:normal;color:var(--gold);display:block;}
+.hero-sub{font-size:1.1rem;color:var(--ink2);max-width:480px;margin-bottom:36px;font-weight:300;line-height:1.8;}
+.hero-stats{display:flex;gap:32px;margin-bottom:44px;}
+.stat{text-align:center;}
+.stat-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--gold);display:block;}
+.stat-label{font-size:.78rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em;}
+.hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.btn-primary{background:var(--gold);color:var(--white);border:none;padding:16px 36px;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .25s;box-shadow:0 4px 20px rgba(201,149,42,.35);}
+.btn-primary:hover{background:#b8841f;transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,149,42,.45);}
+.btn-secondary{color:var(--ink2);text-decoration:none;font-size:.95rem;font-weight:500;display:flex;align-items:center;gap:6px;border-bottom:1px dashed var(--muted);padding-bottom:2px;}
+.hero-book{position:relative;display:flex;align-items:center;justify-content:center;}
+.book-cover{width:280px;background:linear-gradient(145deg,#1a1f2e,#2d3560);border-radius:6px 16px 16px 6px;padding:40px 32px;box-shadow:
+  -8px 0 0 #0d111a,
+  -16px 6px 32px rgba(0,0,0,.5),
+  0 20px 60px rgba(0,0,0,.4);
+  position:relative;overflow:hidden;}
+.book-cover::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(to right,rgba(255,255,255,.15),transparent);border-radius:6px 0 0 6px;}
+.book-cover::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(255,255,255,.1),transparent);}
+.book-tag{background:var(--gold);color:var(--white);font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:3px;letter-spacing:.1em;text-transform:uppercase;display:inline-block;margin-bottom:20px;}
+.book-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--white);line-height:1.2;margin-bottom:10px;}
+.book-subtitle{font-size:.78rem;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:24px;}
+.book-rule{height:1px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:20px;}
+.book-meta{font-size:.72rem;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;}
+.book-pages{position:absolute;right:-6px;top:10px;bottom:10px;width:10px;background:repeating-linear-gradient(to bottom,#e8ddc8 0,#e8ddc8 1px,#f5f0e8 1px,#f5f0e8 3px);border-radius:0 2px 2px 0;}
+.floating-badge{position:absolute;bottom:-20px;right:-30px;background:var(--white);border:2px solid var(--border);border-radius:50%;width:100px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);animation:float 3s ease-in-out infinite;}
+.floating-badge .price{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);}
+.floating-badge .old-price{font-size:.7rem;color:var(--muted);text-decoration:line-through;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+/* ── SOCIAL PROOF BAR ── */
+.proof-bar{background:var(--ink);color:rgba(255,255,255,.6);padding:16px 5%;text-align:center;font-size:.85rem;letter-spacing:.04em;}
+.proof-bar strong{color:var(--gold2);}
+
+/* ── SECTION ── */
+section{padding:80px 5%;max-width:1280px;margin:0 auto;}
+.section-eyebrow{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:12px;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,2.8rem);font-weight:900;line-height:1.2;color:var(--ink);margin-bottom:20px;}
+.section-lead{font-size:1.05rem;color:var(--ink2);max-width:600px;line-height:1.8;margin-bottom:50px;}
+
+/* ── PAIN POINTS ── */
+.pain-section{background:var(--white);padding:80px 0;}
+.pain-inner{max-width:1280px;margin:0 auto;padding:0 5%;}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;}
+.pain-card{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden;}
+.pain-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--red),#ff6b6b);}
+.pain-icon{font-size:2rem;margin-bottom:14px;}
+.pain-card h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:10px;color:var(--ink);}
+.pain-card p{font-size:.88rem;color:var(--muted);line-height:1.7;}
+
+/* ── WHAT YOU GET ── */
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:48px;}
+.feature-item{display:flex;gap:16px;align-items:flex-start;padding:20px;background:var(--white);border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+.feature-item:hover{border-color:var(--gold);box-shadow:0 4px 20px rgba(201,149,42,.1);}
+.feature-icon{width:44px;height:44px;background:rgba(201,149,42,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.feature-text h4{font-weight:600;font-size:.95rem;margin-bottom:4px;color:var(--ink);}
+.feature-text p{font-size:.82rem;color:var(--muted);line-height:1.6;}
+
+/* ── TECHNIQUES PREVIEW ── */
+.techniques-section{background:linear-gradient(135deg,#1a1f2e 0%,#2d3560 100%);padding:80px 0;color:var(--white);}
+.techniques-inner{max-width:1280px;margin:0 auto;padding:0 5%;}
+.techniques-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:48px;}
+.tech-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:18px;transition:all .25s;cursor:default;}
+.tech-card:hover{background:rgba(201,149,42,.15);border-color:var(--gold);transform:translateY(-4px);}
+.tech-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:rgba(201,149,42,.4);margin-bottom:8px;}
+.tech-title{font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.5;font-weight:500;}
+
+/* ── TESTIMONIALS ── */
+.testimonials-section{background:var(--white);padding:80px 0;}
+.testimonials-inner{max-width:1280px;margin:0 auto;padding:0 5%;}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;}
+.testi-card{background:var(--cream);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;}
+.testi-quote{font-family:'Playfair Display',serif;font-size:3rem;color:var(--gold);opacity:.3;line-height:1;margin-bottom:12px;}
+.testi-text{font-size:.9rem;color:var(--ink2);line-height:1.8;margin-bottom:20px;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:12px;}
+.testi-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#f5c842);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--white);font-size:.9rem;}
+.testi-name{font-weight:600;font-size:.88rem;color:var(--ink);}
+.testi-role{font-size:.76rem;color:var(--muted);}
+.stars{color:var(--gold);font-size:.85rem;margin-bottom:12px;}
+
+/* ── PRICING ── */
+.pricing-section{padding:80px 0;background:var(--cream);}
+.pricing-inner{max-width:1280px;margin:0 auto;padding:0 5%;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;align-items:start;}
+.price-card{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:36px 28px;position:relative;transition:all .3s;}
+.price-card.featured{border-color:var(--gold);box-shadow:0 12px 48px rgba(201,149,42,.2);}
+.price-card.featured::before{content:'PHỔ BIẾN NHẤT';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--white);padding:5px 18px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.1em;white-space:nowrap;}
+.price-plan{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;}
+.price-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;margin-bottom:8px;}
+.price-amount{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:900;color:var(--gold);}
+.price-amount sup{font-size:1.1rem;vertical-align:top;margin-top:8px;display:inline-block;}
+.price-old{font-size:.85rem;color:var(--muted);text-decoration:line-through;margin-bottom:20px;}
+.price-features{list-style:none;margin:24px 0;display:flex;flex-direction:column;gap:10px;}
+.price-features li{display:flex;align-items:flex-start;gap:10px;font-size:.88rem;color:var(--ink2);}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;}
+.btn-buy{width:100%;padding:15px;border:2px solid var(--gold);background:transparent;color:var(--gold);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .25s;}
+.btn-buy:hover,.price-card.featured .btn-buy{background:var(--gold);color:var(--white);}
+
+/* ── ORDER MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,17,23,.6);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--white);border-radius:20px;padding:44px;max-width:520px;width:100%;box-shadow:var(--shadow-lg);animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--ink);}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);transition:color .2s;}
+.modal-close:hover{color:var(--ink);}
+.product-summary{background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;}
+.product-summary-name{font-weight:600;font-size:.95rem;color:var(--ink);}
+.product-summary-price{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--gold);}
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:.82rem;font-weight:600;color:var(--ink2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+.form-input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--ink);background:var(--white);transition:border-color .2s;}
+.form-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,149,42,.12);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-note{font-size:.78rem;color:var(--muted);margin-top:16px;text-align:center;line-height:1.6;}
+.btn-submit{width:100%;padding:16px;background:var(--gold);color:var(--white);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .25s;margin-top:8px;}
+.btn-submit:hover{background:#b8841f;transform:translateY(-1px);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.success-msg{display:none;text-align:center;padding:20px;}
+.success-icon{font-size:3.5rem;margin-bottom:16px;}
+.success-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--green);margin-bottom:8px;}
+.success-text{font-size:.9rem;color:var(--muted);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:var(--white);padding:14px 22px;border-radius:10px;font-size:.88rem;z-index:9999;transform:translateY(80px);opacity:0;transition:all .35s;box-shadow:var(--shadow-lg);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.error{background:var(--red);}
+
+/* ── FAQ ── */
+.faq-section{padding:80px 0;}
+.faq-inner{max-width:800px;margin:0 auto;padding:0 5%;}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0;}
+.faq-q{font-weight:600;font-size:.95rem;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.faq-q span{font-size:1.1rem;color:var(--gold);flex-shrink:0;transition:transform .3s;}
+.faq-a{font-size:.88rem;color:var(--muted);line-height:1.8;max-height:0;overflow:hidden;transition:all .35s;}
+.faq-item.open .faq-a{max-height:300px;padding-top:12px;}
+.faq-item.open .faq-q span{transform:rotate(45deg);}
+
+/* ── FOOTER CTA ── */
+.footer-cta{background:linear-gradient(135deg,#1a1f2e,#2d3560);padding:80px 5%;text-align:center;color:var(--white);}
+.footer-cta h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);font-weight:900;margin-bottom:16px;}
+.footer-cta p{color:rgba(255,255,255,.65);margin-bottom:36px;font-size:1.05rem;}
+footer{background:var(--ink);color:rgba(255,255,255,.4);text-align:center;padding:24px;font-size:.82rem;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;text-align:center;gap:40px;padding:100px 5% 60px;}
+  .hero-sub{margin:0 auto 36px;}
+  .hero-actions{justify-content:center;}
+  .hero-stats{justify-content:center;}
+  .pain-grid,.features-grid,.testi-grid,.pricing-grid{grid-template-columns:1fr;}
+  .techniques-grid{grid-template-columns:repeat(3,1fr);}
+  .book-cover{width:220px;}
+  .form-row{grid-template-columns:1fr;}
+}
+@media(max-width:600px){.techniques-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Kỹ Năng <span>Bán Hàng</span></div>
+  <a href="#pricing" class="nav-cta">Mua ngay →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">⚡ Cẩm nang thực chiến #1 về xử lý giá</div>
+    <h1 class="hero-title">
+      Bán Giá Cao.<br>
+      <em>Chốt Đơn Dễ Hơn.</em>
+    </h1>
+    <p class="hero-sub">15 kỹ thuật tâm lý học được kiểm chứng thực tế giúp bạn ứng phó khi khách nói "đắt quá" — không cần giảm giá, không mất khách.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">15</span><span class="stat-label">Kỹ thuật</span></div>
+      <div class="stat"><span class="stat-num">60+</span><span class="stat-label">Trang nội dung</span></div>
+      <div class="stat"><span class="stat-num">30</span><span class="stat-label">Ngày luyện tập</span></div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openModal('ebook')">Tải ebook ngay — 197.000đ</button>
+      <a href="#features" class="btn-secondary">Xem nội dung ↓</a>
+    </div>
+  </div>
+  <div class="hero-book">
+    <div class="book-cover">
+      <div class="book-tag">Ebook · PDF</div>
+      <div class="book-title">Kỹ Năng Bán Hàng</div>
+      <div class="book-subtitle">15 Kỹ Thuật Vượt Rào Cản Giá Cả · Tâm Lý Học · Kịch Bản Thực Tế</div>
+      <div class="book-rule"></div>
+      <div class="book-meta">Cẩm nang thực chiến</div>
+      <div class="book-pages"></div>
+    </div>
+    <div class="floating-badge">
+      <div class="price">197k</div>
+      <div class="old-price">397k</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF BAR -->
+<div class="proof-bar">
+  🔥 Hơn <strong>500+ người bán hàng</strong> đã áp dụng thành công · Từ bất động sản, phần mềm, F&B đến dịch vụ tư vấn
+</div>
+
+<!-- PAIN POINTS -->
+<div class="pain-section">
+  <div class="pain-inner">
+    <div class="section-eyebrow">Vấn đề thường gặp</div>
+    <h2 class="section-title">Bạn có đang gặp những tình huống này?</h2>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon">😰</div>
+        <h3>Giảm giá mà vẫn mất khách</h3>
+        <p>Bạn nhượng bộ về giá nhưng khách vẫn không chốt — và lợi nhuận thì đã bị cắt giảm rồi.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">😤</div>
+        <h3>Không biết nói gì khi khách so sánh</h3>
+        <p>"Bên kia rẻ hơn bên em nhiều!" — câu này khiến bạn lúng túng và không biết phản hồi thế nào.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">😔</div>
+        <h3>Bán chăm nhưng thu nhập không tăng</h3>
+        <p>Làm việc nhiều, gặp nhiều khách, nhưng tỷ lệ chốt thấp vì luôn bị rào cản giá chặn lại.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-eyebrow">Nội dung ebook</div>
+  <h2 class="section-title">Tất cả những gì bạn sẽ học được</h2>
+  <p class="section-lead">Không phải lý thuyết sách vở — đây là hệ thống đã được kiểm chứng qua hàng trăm tình huống bán hàng thực tế.</p>
+  <div class="features-grid">
+    <div class="feature-item"><div class="feature-icon">🧠</div><div class="feature-text"><h4>Tâm lý học hành vi</h4><p>6 hiệu ứng tâm lý (Loss Aversion, Anchoring, Social Proof...) ứng dụng vào bán hàng thực tế.</p></div></div>
+    <div class="feature-item"><div class="feature-icon">💬</div><div class="feature-text"><h4>Kịch bản hội thoại mẫu</h4><p>Câu nói cụ thể của khách và cách bạn phản hồi — cho từng kỹ thuật, có thể áp dụng ngay.</p></div></div>
+    <div class="feature-item"><div class="feature-icon">🏢</div><div class="feature-text"><h4>Case study đa ngành</h4><p>30 tình huống thực tế từ bất động sản, phần mềm, F&B, bảo hiểm, thiết kế, HR...</p></div></div>
+    <div class="feature-item"><div class="feature-icon">✏️</div><div class="feature-text"><h4>Bài tập thực hành</h4><p>Mỗi kỹ thuật kèm bài tập cụ thể — không chỉ đọc hiểu mà phải luyện thành phản xạ.</p></div></div>
+    <div class="feature-item"><div class="feature-icon">📅</div><div class="feature-text"><h4>Kế hoạch 30 ngày</h4><p>Lịch trình luyện tập theo từng tuần — từ nền tảng đến nâng cao, có thể theo dõi tiến độ.</p></div></div>
+    <div class="feature-item"><div class="feature-icon">⚠️</div><div class="feature-text"><h4>Những sai lầm cần tránh</h4><p>Lỗi phổ biến nhất khi áp dụng từng kỹ thuật — giúp bạn không đi vào vết xe đổ.</p></div></div>
+  </div>
+</section>
+
+<!-- TECHNIQUES PREVIEW -->
+<div class="techniques-section">
+  <div class="techniques-inner">
+    <div class="section-eyebrow" style="color:var(--gold2)">15 kỹ thuật</div>
+    <h2 class="section-title" style="color:var(--white)">Preview toàn bộ nội dung</h2>
+    <div class="techniques-grid">
+      <div class="tech-card"><div class="tech-num">01</div><div class="tech-title">Hỏi cụ thể để làm rõ sự so sánh</div></div>
+      <div class="tech-card"><div class="tech-num">02</div><div class="tech-title">Kỹ thuật "Bỏ tính năng" — Nguyên lý mất mát</div></div>
+      <div class="tech-card"><div class="tech-num">03</div><div class="tech-title">Định vị giá trị vượt trội</div></div>
+      <div class="tech-card"><div class="tech-num">04</div><div class="tech-title">Tính tổng chi phí sở hữu (TCO)</div></div>
+      <div class="tech-card"><div class="tech-num">05</div><div class="tech-title">Chi phí của sự trì hoãn</div></div>
+      <div class="tech-card"><div class="tech-num">06</div><div class="tech-title">Phương án trả góp linh hoạt</div></div>
+      <div class="tech-card"><div class="tech-num">07</div><div class="tech-title">Giá có phải vấn đề duy nhất?</div></div>
+      <div class="tech-card"><div class="tech-num">08</div><div class="tech-title">Quy đổi chi phí về đơn vị nhỏ nhất</div></div>
+      <div class="tech-card"><div class="tech-num">09</div><div class="tech-title">Khai thác kinh nghiệm mua hàng trước</div></div>
+      <div class="tech-card"><div class="tech-num">10</div><div class="tech-title">Đồng cảm + Social Proof</div></div>
+      <div class="tech-card"><div class="tech-num">11</div><div class="tech-title">Câu hỏi ngược về chất lượng</div></div>
+      <div class="tech-card"><div class="tech-num">12</div><div class="tech-title">Tính điểm hòa vốn & ROI</div></div>
+      <div class="tech-card"><div class="tech-num">13</div><div class="tech-title">Cảm ơn và hỏi lại mức giá kỳ vọng</div></div>
+      <div class="tech-card"><div class="tech-num">14</div><div class="tech-title">Phân biệt vấn đề giá vs ngân sách</div></div>
+      <div class="tech-card"><div class="tech-num">15</div><div class="tech-title">Câu hỏi giả định "Nếu giá không phải vấn đề"</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div class="testimonials-section">
+  <div class="testimonials-inner">
+    <div class="section-eyebrow">Phản hồi thực tế</div>
+    <h2 class="section-title">Họ đã nói gì sau khi áp dụng?</h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Tôi đã áp dụng kỹ thuật số 4 (TCO) và chốt được hợp đồng 80 triệu mà trước đó khách cứ nói "đắt quá". Chỉ cần một bảng tính đơn giản là đủ.</p>
+        <div class="testi-author"><div class="testi-avatar">AN</div><div><div class="testi-name">Nguyễn Văn An</div><div class="testi-role">Sales Manager · Phần mềm ERP</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Phần kịch bản hội thoại là thứ tôi cần nhất. Không còn lúng túng khi khách so sánh giá — tôi biết chính xác phải nói gì, theo thứ tự nào.</p>
+        <div class="testi-author"><div class="testi-avatar">TB</div><div><div class="testi-name">Trần Thị Bình</div><div class="testi-role">Môi giới BĐS · 5 năm kinh nghiệm</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Tôi mua ebook này cho cả team sales 8 người. Sau 1 tháng luyện tập theo kế hoạch 30 ngày, tỷ lệ chốt tăng từ 23% lên 41%. Xứng đáng x10 lần giá tiền.</p>
+        <div class="testi-author"><div class="testi-avatar">LC</div><div><div class="testi-name">Lê Minh Cường</div><div class="testi-role">Sales Director · Startup SaaS</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-eyebrow">Chọn gói phù hợp</div>
+    <h2 class="section-title">Đầu tư một lần, dùng cả đời</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-plan">Cơ bản</div>
+        <div class="price-name">Ebook PDF</div>
+        <div class="price-amount"><sup>đ</sup>197.000</div>
+        <div class="price-old">Giá gốc: 397.000đ</div>
+        <ul class="price-features">
+          <li>Ebook PDF 60+ trang</li>
+          <li>15 kỹ thuật đầy đủ</li>
+          <li>30 case study thực tế</li>
+          <li>Kế hoạch luyện tập 30 ngày</li>
+          <li>Cập nhật miễn phí</li>
+        </ul>
+        <button class="btn-buy" onclick="openModal('ebook')">Mua ngay</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-plan">Phổ biến</div>
+        <div class="price-name">Combo Ebook + Video</div>
+        <div class="price-amount"><sup>đ</sup>497.000</div>
+        <div class="price-old">Giá gốc: 997.000đ</div>
+        <ul class="price-features">
+          <li>Tất cả trong gói Ebook</li>
+          <li>5 video bài giảng chuyên sâu</li>
+          <li>Template Excel tính TCO & ROI</li>
+          <li>Q&A trực tiếp hàng tháng</li>
+          <li>Cộng đồng Facebook riêng</li>
+        </ul>
+        <button class="btn-buy" onclick="openModal('combo')">Mua ngay</button>
+      </div>
+      <div class="price-card">
+        <div class="price-plan">Nâng cao</div>
+        <div class="price-name">Coaching 1-1</div>
+        <div class="price-amount"><sup>đ</sup>1.200.000</div>
+        <div class="price-old">Giá gốc: 2.000.000đ</div>
+        <ul class="price-features">
+          <li>Tất cả trong gói Combo</li>
+          <li>1 buổi coaching 60 phút</li>
+          <li>Kịch bản riêng cho ngành bạn</li>
+          <li>Review recording buổi gặp khách</li>
+          <li>Hỗ trợ qua Zalo 30 ngày</li>
+        </ul>
+        <button class="btn-buy" onclick="openModal('coaching')">Đặt lịch ngay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="faq-inner">
+    <div class="section-eyebrow">FAQ</div>
+    <h2 class="section-title">Câu hỏi thường gặp</h2>
+    <div style="margin-top:36px;">
+      <div class="faq-item open">
+        <div class="faq-q" onclick="toggleFaq(this)">Sau khi mua, tôi nhận ebook như thế nào? <span>+</span></div>
+        <div class="faq-a">File PDF sẽ được gửi tự động qua email sau khi thanh toán được xác nhận (thường trong 1–2 giờ làm việc). Bạn cũng có thể tải xuống trực tiếp từ link trong email xác nhận đơn hàng.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Nội dung có phù hợp với ngành của tôi không? <span>+</span></div>
+        <div class="faq-a">Ebook bao gồm case study từ 10+ ngành khác nhau: bất động sản, phần mềm/SaaS, F&B, bảo hiểm, thiết kế, HR, nội thất, thiết bị y tế, marketing, đào tạo... Các nguyên tắc tâm lý học là phổ quát và áp dụng được cho mọi loại hình kinh doanh.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Tôi mới vào nghề sales, có phù hợp không? <span>+</span></div>
+        <div class="faq-a">Rất phù hợp! Ebook được viết cho cả người mới lẫn sales dày dạn kinh nghiệm. Người mới sẽ có nền tảng vững chắc ngay từ đầu. Người có kinh nghiệm sẽ hệ thống hóa và nâng cấp những gì mình đã biết.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Có hoàn tiền nếu không hài lòng không? <span>+</span></div>
+        <div class="faq-a">Có! Chúng tôi cam kết hoàn tiền 100% trong vòng 7 ngày nếu bạn không hài lòng với nội dung. Không cần giải thích lý do. Chỉ cần gửi email và chúng tôi sẽ hoàn tiền trong 24 giờ.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER CTA -->
+<div class="footer-cta">
+  <h2>Bắt đầu chốt đơn tốt hơn ngay hôm nay</h2>
+  <p>Đừng để tiếp tục mất khách vì không biết cách xử lý rào cản giá.</p>
+  <button class="btn-primary" onclick="openModal('ebook')" style="font-size:1.05rem;padding:18px 44px;">Mua ebook — Chỉ 197.000đ →</button>
+</div>
+<footer>© 2024 Kỹ Năng Bán Hàng · Mọi quyền được bảo lưu</footer>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <div id="formView">
+      <div class="modal-header">
+        <div class="modal-title">Đặt hàng</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="product-summary">
+        <div class="product-summary-name" id="modalProductName">Ebook PDF</div>
+        <div class="product-summary-price" id="modalProductPrice">197.000đ</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Họ và tên *</label>
+          <input class="form-input" id="orderName" type="text" placeholder="Nguyễn Văn An">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Số điện thoại *</label>
+          <input class="form-input" id="orderPhone" type="tel" placeholder="0901234567">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-input" id="orderEmail" type="email" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ghi chú</label>
+        <input class="form-input" id="orderNote" type="text" placeholder="Mua cho team / cá nhân...">
+      </div>
+      <p class="form-note">🔒 Thông tin của bạn được bảo mật · File PDF gửi qua email sau khi thanh toán</p>
+      <button class="btn-submit" id="submitBtn" onclick="submitOrder()">Xác nhận đặt hàng →</button>
+    </div>
+    <div class="success-msg" id="successView">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Đặt hàng thành công!</div>
+      <p class="success-text" id="successText">Cảm ơn bạn! Chúng tôi sẽ gửi xác nhận và hướng dẫn thanh toán qua email trong vài phút.</p>
+      <button class="btn-submit" style="margin-top:20px;" onclick="closeModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG — THAY BẰNG THÔNG TIN SUPABASE CỦA BẠN ──
+const SUPABASE_URL = 'https://ibwkgdhddmtdamdgfnjg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_02oXEtwOT1NkaL9EskpugA_mvQH0gHZ';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Product IDs từ Supabase (sau khi chạy SQL)
+const PRODUCTS = {
+  ebook:    { name: 'Ebook: Kỹ Năng Bán Hàng PDF',   price: 197000, display: '197.000đ' },
+  combo:    { name: 'Combo Ebook + Video Course',       price: 497000, display: '497.000đ' },
+  coaching: { name: 'Coaching 1-1 (1 buổi)',            price: 1200000, display: '1.200.000đ' },
+};
+
+let currentProduct = 'ebook';
+
+function openModal(type) {
+  currentProduct = type;
+  const p = PRODUCTS[type];
+  document.getElementById('modalProductName').textContent = p.name;
+  document.getElementById('modalProductPrice').textContent = p.display;
+  document.getElementById('formView').style.display = '';
+  document.getElementById('successView').style.display = 'none';
+  document.getElementById('orderModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('orderModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.getElementById('orderModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('orderModal')) closeModal();
+});
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3500);
+}
+
+async function submitOrder() {
+  const name  = document.getElementById('orderName').value.trim();
+  const email = document.getElementById('orderEmail').value.trim();
+  const phone = document.getElementById('orderPhone').value.trim();
+  const note  = document.getElementById('orderNote').value.trim();
+
+  if (!name)  return showToast('Vui lòng nhập họ tên', true);
+  if (!email || !email.includes('@')) return showToast('Email không hợp lệ', true);
+  if (!phone) return showToast('Vui lòng nhập số điện thoại', true);
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Đang xử lý...';
+
+  try {
+    const p = PRODUCTS[currentProduct];
+
+    // Upsert customer
+    const { data: cust } = await db.from('customers').upsert(
+      { full_name: name, email, phone, source: 'landing_page' },
+      { onConflict: 'email' }
+    ).select().single();
+
+    // Insert order
+    const { error } = await db.from('orders').insert({
+      order_code: '',
+      customer_id: cust?.id || null,
+      customer_name: name,
+      customer_email: email,
+      customer_phone: phone,
+      product_name: p.name,
+      quantity: 1,
+      unit_price: p.price,
+      total_amount: p.price,
+      status: 'pending',
+      payment_method: 'bank_transfer',
+      payment_status: 'unpaid',
+      notes: note,
+    });
+
+    if (error) throw error;
+
+    // Show success
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successView').style.display = 'block';
+    document.getElementById('successText').textContent =
+      `Cảm ơn ${name}! Đơn hàng "${p.name}" đã được ghi nhận. Chúng tôi sẽ gửi hướng dẫn thanh toán qua email ${email} trong vài phút.`;
+
+  } catch (err) {
+    console.error(err);
+    showToast('Có lỗi xảy ra, vui lòng thử lại!', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Xác nhận đặt hàng →';
+  }
+}
+
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  item.classList.toggle('open');
+}
+
+// Stagger animation on scroll
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = 1;
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.pain-card,.feature-item,.testi-card,.tech-card,.price-card').forEach((el, i) => {
+  el.style.opacity = 0;
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = `opacity .5s ease ${(i % 4) * 0.1}s, transform .5s ease ${(i % 4) * 0.1}s`;
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
