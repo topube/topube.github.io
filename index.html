@@ -124,7 +124,7 @@ section{padding:80px 5%;max-width:1280px;margin:0 auto;}
 /* ── PRICING ── */
 .pricing-section{padding:80px 0;background:var(--section);}
 .pricing-inner{max-width:1280px;margin:0 auto;padding:0 5%;}
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;align-items:start;}
+.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:48px;align-items:start;max-width:800px;margin-left:auto;margin-right:auto;}
 .price-card{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:36px 28px;position:relative;transition:all .3s;}
 .price-card.featured{border-color:var(--accent);box-shadow:0 12px 48px rgba(249,115,22,.2);}
 .price-card.featured::before{content:'PHỔ BIẾN NHẤT';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--white);padding:5px 18px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.1em;white-space:nowrap;}
@@ -375,20 +375,7 @@ footer{background:#0f172a;color:rgba(255,255,255,.4);text-align:center;padding:2
         </ul>
         <button class="btn-buy" onclick="openModal('combo')">Mua ngay</button>
       </div>
-      <div class="price-card">
-        <div class="price-plan">Nâng cao</div>
-        <div class="price-name">Coaching 1-1</div>
-        <div class="price-amount"><sup>đ</sup>1.200.000</div>
-        <div class="price-old">Giá gốc: 2.000.000đ</div>
-        <ul class="price-features">
-          <li>Tất cả trong gói Combo</li>
-          <li>1 buổi coaching 60 phút</li>
-          <li>Kịch bản riêng cho ngành bạn</li>
-          <li>Review recording buổi gặp khách</li>
-          <li>Hỗ trợ qua Zalo 30 ngày</li>
-        </ul>
-        <button class="btn-buy" onclick="openModal('coaching')">Đặt lịch ngay</button>
-      </div>
+
     </div>
   </div>
 </div>
@@ -472,7 +459,24 @@ footer{background:#0f172a;color:rgba(255,255,255,.4);text-align:center;padding:2
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG — THAY BẰNG THÔNG TIN SUPABASE CỦA BẠN ──
+// ── SUPABASE EDGE FUNCTION — gửi email xác nhận + link download ──
+// Sau khi deploy Edge Function, không cần thay gì thêm ở đây
+async function sendConfirmEmail(name, email, productName, productKey, orderCode) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-confirmation-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+      },
+      body: JSON.stringify({ name, email, productName, productKey, orderCode }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    console.log('Email sent via Supabase Edge Function');
+  } catch (err) {
+    console.error('Email error:', err);
+  }
+}
 const SUPABASE_URL = 'https://ibwkgdhddmtdamdgfnjg.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_02oXEtwOT1NkaL9EskpugA_mvQH0gHZ';
 const { createClient } = supabase;
@@ -482,7 +486,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 const PRODUCTS = {
   ebook:    { name: 'Ebook: Kỹ Năng Bán Hàng PDF',   price: 197000, display: '197.000đ' },
   combo:    { name: 'Combo Ebook + Video Course',       price: 497000, display: '497.000đ' },
-  coaching: { name: 'Coaching 1-1 (1 buổi)',            price: 1200000, display: '1.200.000đ' },
+
 };
 
 let currentProduct = 'ebook';
@@ -554,11 +558,24 @@ async function submitOrder() {
 
     if (error) throw error;
 
+    // Lấy order_code vừa tạo
+    const { data: newOrder } = await db.from('orders')
+      .select('order_code')
+      .eq('customer_email', email)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    const orderCode = newOrder?.order_code || '—';
+
+    // Gửi email xác nhận + link download
+    await sendConfirmEmail(name, email, p.name, currentProduct, orderCode);
+
     // Show success
     document.getElementById('formView').style.display = 'none';
     document.getElementById('successView').style.display = 'block';
     document.getElementById('successText').textContent =
-      `Cảm ơn ${name}! Đơn hàng "${p.name}" đã được ghi nhận. Chúng tôi sẽ gửi hướng dẫn thanh toán qua email ${email} trong vài phút.`;
+      `Cảm ơn ${name}! Đơn hàng #${orderCode} đã được ghi nhận. Email xác nhận kèm link tải ebook đã được gửi tới ${email} — vui lòng kiểm tra hộp thư (kể cả thư mục spam).`;
 
   } catch (err) {
     console.error(err);
