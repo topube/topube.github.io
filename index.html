@@ -460,15 +460,16 @@ footer{background:#0f172a;color:rgba(255,255,255,.4);text-align:center;padding:2
 
 <script>
 // ── SUPABASE EDGE FUNCTION — gửi email xác nhận + link download ──
-// Sau khi deploy Edge Function, không cần thay gì thêm ở đây
+// Token bảo mật riêng — phải khớp với FUNCTION_SECRET trong Supabase Secrets
+const FUNCTION_SECRET = 'kynangsales2026';
+
 async function sendConfirmEmail(name, email, productName, productKey, orderCode) {
   try {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/send-confirmation-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'x-function-secret': FUNCTION_SECRET,
       },
       body: JSON.stringify({ name, email, productName, productKey, orderCode }),
     });
