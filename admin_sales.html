@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quản Lý Bán Hàng · Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
@@ -27,7 +27,7 @@
   --shadow:   0 2px 16px rgba(0,0,0,.4);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px;}
 
 /* ── SIDEBAR ── */
 .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:50;}
@@ -52,10 +52,10 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
 .page-title{font-size:1.05rem;font-weight:700;}
 .topbar-actions{display:flex;align-items:center;gap:12px;}
-.topbar-search{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text);font-family:'Be Vietnam Pro',sans-serif;font-size:.85rem;width:260px;transition:all .2s;}
+.topbar-search{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:.85rem;width:260px;transition:all .2s;}
 .topbar-search:focus{outline:none;border-color:var(--gold);width:300px;}
 .topbar-search::placeholder{color:var(--text2);}
-.btn{background:var(--gold);color:#000;border:none;padding:8px 16px;border-radius:8px;font-family:'Be Vietnam Pro',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn{background:var(--gold);color:#000;border:none;padding:8px 16px;border-radius:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
 .btn:hover{background:var(--gold2);transform:translateY(-1px);}
 .btn.outline{background:transparent;border:1px solid var(--border);color:var(--text2);}
 .btn.outline:hover{border-color:var(--gold);color:var(--gold);}
@@ -80,7 +80,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .kpi-card.green::before{background:linear-gradient(to right,#1a7f37,var(--green));}
 .kpi-card.purple::before{background:linear-gradient(to right,#6e40c9,var(--purple));}
 .kpi-label{font-size:.75rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
-.kpi-value{font-size:1.8rem;font-weight:800;margin-bottom:4px;}
+.kpi-value{font-size:1.8rem;font-weight:800;margin-bottom:4px;font-family:ui-monospace,'SF Mono',monospace;letter-spacing:-.03em;}
 .kpi-change{font-size:.75rem;color:var(--green);}
 .kpi-change.down{color:var(--red);}
 .kpi-icon{position:absolute;right:16px;top:16px;font-size:1.6rem;opacity:.25;}
@@ -95,7 +95,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 .table-title{font-size:.88rem;font-weight:700;}
 .table-filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-.filter-select{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--text);font-family:'Be Vietnam Pro',sans-serif;font-size:.8rem;cursor:pointer;}
+.filter-select{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:.8rem;cursor:pointer;}
 .filter-select:focus{outline:none;border-color:var(--gold);}
 .data-table{width:100%;border-collapse:collapse;}
 .data-table th{padding:10px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
@@ -133,7 +133,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .modal-close:hover{color:var(--text);}
 .form-group{margin-bottom:16px;}
 .form-label{display:block;font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
-.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Be Vietnam Pro',sans-serif;font-size:.9rem;transition:border-color .2s;}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:.9rem;transition:border-color .2s;}
 .form-input:focus{outline:none;border-color:var(--gold);}
 .form-input option{background:var(--surface2);}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
