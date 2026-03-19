@@ -467,11 +467,16 @@ async function sendConfirmEmail(name, email, productName, productKey, orderCode)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`,
       },
       body: JSON.stringify({ name, email, productName, productKey, orderCode }),
     });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('Edge Function error:', errText);
+      return;
+    }
     console.log('Email sent via Supabase Edge Function');
   } catch (err) {
     console.error('Email error:', err);
